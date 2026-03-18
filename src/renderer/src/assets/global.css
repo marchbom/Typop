@@ -803,6 +803,58 @@ body,
   }
 }
 
+/* ── GAME EXIT ── */
+.game-exit-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 20;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.game-exit-btn:hover {
+  background: var(--surface2);
+}
+
+.exit-confirm-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.exit-confirm-box {
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.exit-confirm-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.exit-confirm-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
 /* ── AUTH / USER ── */
 .home-header {
   position: absolute;

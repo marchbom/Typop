@@ -1,4 +1,4 @@
-import { useCallback } from "react"
+import { useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useGameLoop } from "../game/useGameLoop"
 import { useAuth } from "../context/AuthContext"
@@ -7,6 +7,7 @@ import { insertScore } from "../lib/supabase"
 export default function GamePage(): React.JSX.Element {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const [showExitConfirm, setShowExitConfirm] = useState(false)
 
   const handleGameOver = useCallback(
     async (score: number, round: number, totalTime: number) => {
@@ -84,6 +85,26 @@ export default function GamePage(): React.JSX.Element {
 
   return (
     <div className="game-container" ref={containerRef}>
+      <button className="game-exit-btn" onClick={() => setShowExitConfirm(true)}>
+        ← 나가기
+      </button>
+
+      {showExitConfirm && (
+        <div className="exit-confirm-overlay">
+          <div className="exit-confirm-box">
+            <p className="exit-confirm-title">게임을 종료하시겠습니까?</p>
+            <div className="exit-confirm-btns">
+              <button className="game-btn" onClick={() => { setShowExitConfirm(false); navigate("/") }}>
+                저장하지 않고 나가기
+              </button>
+              <button className="back-btn" onClick={() => setShowExitConfirm(false)}>
+                계속하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {phase === "roundbreak" && (
         <div className="round-break-overlay">
           <p className="round-break-label">{round}라운드</p>

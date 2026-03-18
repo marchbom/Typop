@@ -25,8 +25,18 @@ export const fetchTopScores = async (limit = 20): Promise<ScoreRow[]> => {
     .from("scores")
     .select("*")
     .order("score", { ascending: false })
-    .limit(limit)
-  return (data as ScoreRow[]) ?? []
+
+  const rows = (data as ScoreRow[]) ?? []
+
+  // 유저별 최고 점수 하나만 남기기
+  const seen = new Set<string>()
+  return rows
+    .filter((row) => {
+      if (seen.has(row.user_id)) return false
+      seen.add(row.user_id)
+      return true
+    })
+    .slice(0, limit)
 }
 
 export const insertScore = async (
