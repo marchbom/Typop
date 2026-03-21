@@ -43,16 +43,20 @@ export default function GamePage(): React.JSX.Element {
 
   if (phase === "idle") {
     return (
-      <div className="game-screen">
-        <h1 className="game-title">산성비</h1>
-        <p className="game-desc">떨어지는 가수 이름을 타이핑해서 없애요</p>
-        <p className="game-desc-sub">한국 가수를 없애면 특별 효과가 발동됩니다</p>
-        {!user && <p className="game-desc-sub" style={{ color: "#f4845f" }}>로그인하면 점수가 저장됩니다</p>}
+      <div className="page-screen">
+        <button className="game-exit-btn" onClick={() => navigate("/")}>
+          ← 뒤로
+        </button>
+        <h1 className="game-title">Typop Game</h1>
+        <p className="game-desc">쏟아지는 가수이름. 떨어지기 전에 받아쳐요</p>
+        <p className="game-desc-sub">한국어로 된 아티스트에는 숨겨진 효과가 있어요 👀</p>
+        {!user && (
+          <p className="game-desc-sub" style={{ color: "#f4845f" }}>
+            로그인을 하면 나와 친구의 랭킹을 볼 수 있어요.
+          </p>
+        )}
         <button className="game-btn" onClick={startGame}>
           시작
-        </button>
-        <button className="back-btn" onClick={() => navigate("/")}>
-          ← 뒤로
         </button>
       </div>
     )
@@ -60,7 +64,10 @@ export default function GamePage(): React.JSX.Element {
 
   if (phase === "gameover") {
     return (
-      <div className="game-screen">
+      <div className="page-screen">
+        <button className="game-exit-btn" onClick={() => navigate("/")}>
+          ← 홈으로
+        </button>
         <p className="go-title">GAME OVER</p>
         {user && <p className="game-desc-sub">점수가 저장되었습니다</p>}
         <div className="go-stats">
@@ -74,10 +81,7 @@ export default function GamePage(): React.JSX.Element {
           </div>
         </div>
         <button className="game-btn" onClick={startGame}>
-          다시 시작
-        </button>
-        <button className="back-btn" onClick={() => navigate("/")}>
-          ← 홈으로
+          한 번 더
         </button>
       </div>
     )
@@ -94,7 +98,13 @@ export default function GamePage(): React.JSX.Element {
           <div className="exit-confirm-box">
             <p className="exit-confirm-title">게임을 종료하시겠습니까?</p>
             <div className="exit-confirm-btns">
-              <button className="game-btn" onClick={() => { setShowExitConfirm(false); navigate("/") }}>
+              <button
+                className="game-btn"
+                onClick={() => {
+                  setShowExitConfirm(false)
+                  navigate("/")
+                }}
+              >
                 저장하지 않고 나가기
               </button>
               <button className="back-btn" onClick={() => setShowExitConfirm(false)}>

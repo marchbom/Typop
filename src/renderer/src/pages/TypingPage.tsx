@@ -16,7 +16,7 @@ function SearchView({ onSelect }: { onSelect: (song: SongResult) => void }): Rea
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  const handleSearch = async (e: React.FormEvent): Promise<void> => {
+  const handleSearch = async (e: React.SubmitEvent): Promise<void> => {
     e.preventDefault()
     if (!query.trim()) return
     setLoading(true)
@@ -32,23 +32,17 @@ function SearchView({ onSelect }: { onSelect: (song: SongResult) => void }): Rea
   }
 
   return (
-    <div className="home-page">
-      <button
-        className="back-btn small"
-        style={{ alignSelf: "flex-start" }}
-        onClick={() => navigate("/")}
-      >
+    <div className="page-screen">
+      <button className="game-exit-btn" onClick={() => navigate("/")}>
         ← 뒤로
       </button>
-      <h1 className="app-title" style={{ marginTop: 16 }}>
-        가사 타이핑
-      </h1>
-      <p className="app-subtitle">노래를 검색하세요</p>
+      <h1 className="game-title">Lyrics Typing</h1>
+      <p className="game-desc">어떤 노래로 연습할까요?</p>
       <form className="search-form" onSubmit={handleSearch}>
         <input
           className="search-input"
           type="text"
-          placeholder="노래 제목 또는 아티스트..."
+          placeholder="노래 제목 또는 가수 이름을 입력하세요"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           autoFocus
@@ -202,7 +196,7 @@ export default function TypingPage(): React.JSX.Element {
 
   if (loading) {
     return (
-      <div className="typing-page center">
+      <div className="page-screen">
         <p className="loading-msg">가사 불러오는 중...</p>
       </div>
     )
@@ -210,10 +204,10 @@ export default function TypingPage(): React.JSX.Element {
 
   if (error) {
     return (
-      <div className="typing-page center">
+      <div className="page-screen">
         <p className="error-msg">{error}</p>
-        <button className="back-btn" onClick={() => navigate("/")}>
-          홈으로
+        <button className="game-exit-btn" onClick={() => navigate("/")}>
+          ← 홈으로
         </button>
       </div>
     )
@@ -221,7 +215,7 @@ export default function TypingPage(): React.JSX.Element {
 
   if (finished) {
     return (
-      <div className="typing-page center">
+      <div className="page-screen">
         <div className="result-card">
           <h2>완료! 🎉</h2>
           <p className="song-meta">
@@ -237,8 +231,8 @@ export default function TypingPage(): React.JSX.Element {
               <span className="stat-label">정확도</span>
             </div>
           </div>
-          <button className="back-btn" onClick={() => navigate("/")}>
-            다른 노래 검색
+          <button className="game-exit-btn" onClick={() => navigate("/")}>
+            ← 홈으로
           </button>
         </div>
       </div>
@@ -247,11 +241,11 @@ export default function TypingPage(): React.JSX.Element {
 
   return (
     <div className="typing-page">
+      <button className="game-exit-btn" onClick={() => navigate("/")}>
+        ← 뒤로
+      </button>
       {/* 상단 정보 */}
       <header className="typing-header">
-        <button className="back-btn small" onClick={() => navigate("/")}>
-          ← 뒤로
-        </button>
         <div className="song-meta">
           <strong>{song.title}</strong> — {song.artist}
         </div>
