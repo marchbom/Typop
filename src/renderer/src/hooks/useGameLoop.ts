@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react"
-import { ARTISTS } from "./artists"
-import { ROUND_DURATION, getRoundConfig, Phase, FallingWord } from "./gameConfig"
+import { ARTISTS } from "../game/artists"
+import { ROUND_DURATION, getRoundConfig, Phase, FallingWord } from "../game/gameConfig"
 
 const KOREAN_REGEX = /[\uAC00-\uD7A3]/
 
@@ -15,8 +15,8 @@ export interface GameState {
   timeLeft: number
   effectMsg: string
   targeted: FallingWord | undefined
-  containerRef: React.RefObject<HTMLDivElement>
-  inputRef: React.RefObject<HTMLInputElement>
+  containerRef: React.RefObject<HTMLDivElement | null>
+  inputRef: React.RefObject<HTMLInputElement | null>
   startGame: () => void
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
@@ -61,12 +61,23 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
     const pool = available.length > 0 ? available : ARTISTS
     const text = pool[Math.floor(Math.random() * pool.length)]
     const { speed } = getRoundConfig(roundRef.current)
+
+    // x 위치 겹침 방지: 기존 단어들과 최소 18%(컨테이너 너비 기준) 이상 거리를 확보.
+    // 최대 10번 재시도하고, 그래도 겹치면 마지막 값 그대로 사용.
+    const MIN_DIST = 18
+    let x = 8 + Math.random() * 74
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const overlaps = wordsRef.current.some((w) => Math.abs(w.x - x) < MIN_DIST)
+      if (!overlaps) break
+      x = 8 + Math.random() * 74
+    }
+
     wordsRef.current.push({
       id: nextIdRef.current++,
       text,
-      x: 8 + Math.random() * 74,
+      x,
       y: -40,
-      speed: speed * (0.8 + Math.random() * 0.4),
+      speed: speed * (0.8 + Math.random() * 0.4)
     })
   }
 
@@ -216,7 +227,19 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
       : undefined
 
   return {
-    phase, words, input, score, lives, round, totalTime, timeLeft, effectMsg,
-    targeted, containerRef, inputRef, startGame, handleInput,
+    phase,
+    words,
+    input,
+    score,
+    lives,
+    round,
+    totalTime,
+    timeLeft,
+    effectMsg,
+    targeted,
+    containerRef,
+    inputRef,
+    startGame,
+    handleInput
   }
 }

@@ -1,3 +1,5 @@
+import React from "react"
+
 const ROWS = [
   ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
   ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
@@ -8,7 +10,7 @@ interface KeyboardProps {
   activeKey: string
 }
 
-export default function Keyboard({ activeKey }: KeyboardProps) {
+export default function Keyboard({ activeKey }: KeyboardProps): React.JSX.Element {
   const active = activeKey.toUpperCase()
 
   return (
@@ -21,9 +23,7 @@ export default function Keyboard({ activeKey }: KeyboardProps) {
             </div>
           ))}
           {i === 2 && (
-            <div className={`key key-wide ${activeKey === "Backspace" ? "key-active" : ""}`}>
-              ⌫
-            </div>
+            <div className={`key key-wide ${activeKey === "Backspace" ? "key-active" : ""}`}>⌫</div>
           )}
         </div>
       ))}

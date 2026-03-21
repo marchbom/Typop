@@ -3,7 +3,6 @@ import HomeHeader from "../components/HomeHeader"
 
 export default function HomePage(): React.JSX.Element {
   const navigate = useNavigate()
-
   return (
     <div className="home-page home-hub">
       <HomeHeader />

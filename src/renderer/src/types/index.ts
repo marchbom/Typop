@@ -12,3 +12,5 @@ export interface TypingStats {
   correctChars: number
   totalChars: number
 }
+
+export type CharState = "pending" | "correct" | "wrong"

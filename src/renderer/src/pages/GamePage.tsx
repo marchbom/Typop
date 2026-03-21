@@ -1,8 +1,10 @@
 import { useCallback, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useGameLoop } from "../game/useGameLoop"
+import { useGameLoop } from "../hooks/useGameLoop"
 import { useAuth } from "../context/AuthContext"
 import { insertScore } from "../lib/supabase"
+import GameIdleScreen from "../components/GameIdleScreen"
+import GameOverScreen from "../components/GameOverScreen"
 
 export default function GamePage(): React.JSX.Element {
   const navigate = useNavigate()
@@ -42,49 +44,11 @@ export default function GamePage(): React.JSX.Element {
   } = useGameLoop({ onGameOver: handleGameOver })
 
   if (phase === "idle") {
-    return (
-      <div className="page-screen">
-        <button className="game-exit-btn" onClick={() => navigate("/")}>
-          ← 뒤로
-        </button>
-        <h1 className="game-title">Typop Game</h1>
-        <p className="game-desc">쏟아지는 가수이름. 떨어지기 전에 받아쳐요</p>
-        <p className="game-desc-sub">한국어로 된 아티스트에는 숨겨진 효과가 있어요 👀</p>
-        {!user && (
-          <p className="game-desc-sub" style={{ color: "#f4845f" }}>
-            로그인을 하면 나와 친구의 랭킹을 볼 수 있어요.
-          </p>
-        )}
-        <button className="game-btn" onClick={startGame}>
-          시작
-        </button>
-      </div>
-    )
+    return <GameIdleScreen user={!!user} onStart={startGame} />
   }
 
   if (phase === "gameover") {
-    return (
-      <div className="page-screen">
-        <button className="game-exit-btn" onClick={() => navigate("/")}>
-          ← 홈으로
-        </button>
-        <p className="go-title">GAME OVER</p>
-        {user && <p className="game-desc-sub">점수가 저장되었습니다</p>}
-        <div className="go-stats">
-          <div className="go-stat">
-            <span className="go-val">{score}</span>
-            <span className="go-label">SCORE</span>
-          </div>
-          <div className="go-stat">
-            <span className="go-val">{round}</span>
-            <span className="go-label">ROUND</span>
-          </div>
-        </div>
-        <button className="game-btn" onClick={startGame}>
-          한 번 더
-        </button>
-      </div>
-    )
+    return <GameOverScreen score={score} round={round} user={!!user} onRestart={startGame} />
   }
 
   return (
