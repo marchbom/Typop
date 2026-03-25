@@ -17,7 +17,7 @@ export interface RoundConfig {
 }
 
 export const getRoundConfig = (round: number): RoundConfig => ({
-  speed: 30 + (round - 1) * 28,
+  speed: 20 + (round - 1) * 20,
   spawnInterval: Math.max(0.5, 2.5 - (round - 1) * 0.4),
   maxWords: 5 + (round - 1),
 })

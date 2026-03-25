@@ -117,12 +117,12 @@ export default function GamePage(): React.JSX.Element {
         const isTargeted = targeted?.id === word.id
         const typedLen = isTargeted ? input.length : 0
         const isDanger = word.y > window.innerHeight * 0.65
-        const isKorean = /[\uAC00-\uD7A3]/.test(word.text)
+        const isEnglish = /^[A-Za-z\s]+$/.test(word.text)
 
         return (
           <div
             key={word.id}
-            className={`falling-word ${isTargeted ? "fw-targeted" : ""} ${isDanger ? "fw-danger" : ""} ${isKorean ? "fw-korean" : ""}`}
+            className={`falling-word ${isTargeted ? "fw-targeted" : ""} ${isDanger ? "fw-danger" : ""} ${isEnglish ? "fw-korean" : ""}`}
             style={{ left: `${word.x}%`, top: `${word.y}px` }}
           >
             {isTargeted ? (
