@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import { ARTISTS } from "../game/artists"
 import { ROUND_DURATION, getRoundConfig, Phase, FallingWord } from "../game/gameConfig"
 
-const KOREAN_REGEX = /[\uAC00-\uD7A3]/
+const ENGLISH_REGEX = /^[A-Za-z\s]+$/
 
 export interface GameState {
   phase: Phase
@@ -42,7 +42,11 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
   const nextIdRef = useRef(0)
   const phaseRef = useRef<Phase>("idle")
   const wordsFrozenRef = useRef(false)
-  const timerFrozenRef = useRef(false)
+  // 셔플 덱: 모든 아티스트를 한 번씩 소진한 뒤 다시 섞어서 균등하게 등장
+  const deckRef = useRef<string[]>([])
+  // 최신 onGameOver 참조 유지 (loop 클로저 캡처 문제 방지)
+  const onGameOverRef = useRef(onGameOver)
+  onGameOverRef.current = onGameOver
 
   // render state
   const [phase, setPhase] = useState<Phase>("idle")
@@ -57,17 +61,25 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
 
   const spawnWord = (): void => {
     const onScreen = new Set(wordsRef.current.map((w) => w.text))
-    const available = ARTISTS.filter((a) => !onScreen.has(a))
-    const pool = available.length > 0 ? available : ARTISTS
-    const text = pool[Math.floor(Math.random() * pool.length)]
+
+    // 덱이 비면 전체 아티스트를 셔플해서 다시 채움
+    if (deckRef.current.length === 0) {
+      deckRef.current = [...ARTISTS].sort(() => Math.random() - 0.5)
+    }
+    // 화면에 이미 있는 단어는 건너뜀
+    const idx = deckRef.current.findIndex((a) => !onScreen.has(a))
+    const text = idx !== -1 ? deckRef.current.splice(idx, 1)[0] : deckRef.current.pop()!
     const { speed } = getRoundConfig(roundRef.current)
 
-    // x 위치 겹침 방지: 기존 단어들과 최소 18%(컨테이너 너비 기준) 이상 거리를 확보.
+    // x 위치 겹침 방지: y가 가까운 단어(위쪽 30% 이내)와 최소 25% 이상 거리를 확보.
     // 최대 10번 재시도하고, 그래도 겹치면 마지막 값 그대로 사용.
-    const MIN_DIST = 18
+    const MIN_DIST = 25
+    const height = containerRef.current?.clientHeight ?? 600
     let x = 8 + Math.random() * 74
     for (let attempt = 0; attempt < 10; attempt++) {
-      const overlaps = wordsRef.current.some((w) => Math.abs(w.x - x) < MIN_DIST)
+      const overlaps = wordsRef.current.some(
+        (w) => w.y < height * 0.3 && Math.abs(w.x - x) < MIN_DIST
+      )
       if (!overlaps) break
       x = 8 + Math.random() * 74
     }
@@ -105,7 +117,7 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
       phaseRef.current = "gameover"
       setScore(scoreRef.current)
       setPhase("gameover")
-      onGameOver?.(scoreRef.current, roundRef.current, Math.floor(totalTimeRef.current))
+      onGameOverRef.current?.(scoreRef.current, roundRef.current, Math.floor(totalTimeRef.current))
       return
     }
 
@@ -116,10 +128,8 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
       spawnWord()
     }
 
-    if (!timerFrozenRef.current) {
-      roundTimerRef.current += dt
-      totalTimeRef.current += dt
-    }
+    roundTimerRef.current += dt
+    totalTimeRef.current += dt
 
     if (roundTimerRef.current >= ROUND_DURATION) {
       roundTimerRef.current = 0
@@ -152,7 +162,7 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
     rafRef.current = requestAnimationFrame(loop)
   }, [])
 
-  const triggerKoreanEffect = (): void => {
+  const triggerSpecialEffect = (): void => {
     const isFreeze = Math.random() < 0.5
     if (isFreeze) {
       wordsFrozenRef.current = true
@@ -162,12 +172,9 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
         setEffectMsg("")
       }, 5000)
     } else {
-      timerFrozenRef.current = true
-      setEffectMsg("⏱ 시간 정지!")
-      setTimeout(() => {
-        timerFrozenRef.current = false
-        setEffectMsg("")
-      }, 5000)
+      roundTimerRef.current = Math.max(0, roundTimerRef.current - 5)
+      setEffectMsg("⏱ +5초!")
+      setTimeout(() => setEffectMsg(""), 2000)
     }
   }
 
@@ -176,14 +183,14 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
     livesRef.current = 3
     roundRef.current = 1
     scoreRef.current = 0
-    spawnTimerRef.current = 0
+    spawnTimerRef.current = Infinity // 게임 시작 시 첫 단어 즉시 스폰
+    deckRef.current = []
     roundTimerRef.current = 0
     totalTimeRef.current = 0
     lastTsRef.current = 0
     nextIdRef.current = 0
     phaseRef.current = "playing"
     wordsFrozenRef.current = false
-    timerFrozenRef.current = false
 
     setWords([])
     setLives(3)
@@ -209,8 +216,8 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
       scoreRef.current++
       setScore(scoreRef.current)
       setInput("")
-      if (KOREAN_REGEX.test(matched.text)) {
-        triggerKoreanEffect()
+      if (ENGLISH_REGEX.test(matched.text)) {
+        triggerSpecialEffect()
       }
     }
   }
