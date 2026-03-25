@@ -2,7 +2,7 @@ import "./assets/global.scss"
 
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
-import { HashRouter } from "react-router-dom"
+import { HashRouter } from "react-router"
 import App from "./App"
 
 createRoot(document.getElementById("root")!).render(

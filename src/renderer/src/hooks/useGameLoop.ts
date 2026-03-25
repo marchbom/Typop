@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback, useDeferredValue } from "react"
 import { ARTISTS } from "../game/artists"
 import { ROUND_DURATION, getRoundConfig, Phase, FallingWord } from "../game/gameConfig"
 
@@ -234,10 +234,11 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
     return () => cancelAnimationFrame(rafRef.current)
   }, [])
 
+  const deferredInput = useDeferredValue(input)
   const targeted =
-    input.length > 0
+    deferredInput.length > 0
       ? [...words]
-          .filter((w) => w.text.toLowerCase().startsWith(input.toLowerCase()))
+          .filter((w) => w.text.toLowerCase().startsWith(deferredInput.toLowerCase()))
           .sort((a, b) => b.y - a.y)[0]
       : undefined
 

@@ -83,31 +83,6 @@ app.whenReady().then(() => {
     await shell.openExternal(url)
   })
 
-  // lyrics.ovh suggest 검색 (한글 포함 결과 제외)
-  const koreanRegex = /[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/
-  ipcMain.handle("lyrics:search", async (_, query: string) => {
-    const res = await axios.get(`https://api.lyrics.ovh/suggest/${encodeURIComponent(query)}`)
-    return res.data.data
-      .filter(
-        (item: { title: string; artist: { name: string } }) =>
-          !koreanRegex.test(item.title) && !koreanRegex.test(item.artist.name)
-      )
-      .map(
-        (item: {
-          id: number
-          title: string
-          artist: { name: string }
-          album: { cover_small: string }
-        }) => ({
-          id: item.id,
-          title: item.title,
-          artist: item.artist.name,
-          thumbnail: item.album.cover_small,
-          url: ""
-        })
-      )
-  })
-
   // 네이버 뉴스 헤드라인
   ipcMain.handle("speed:getNews", async () => {
     const clientId = import.meta.env.VITE_NAVER_CLIENT_ID as string
@@ -131,20 +106,6 @@ app.whenReady().then(() => {
     return res.data.items
       .map((item: { title: string }) => clean(item.title))
       .filter((t: string) => t.length > 5)
-  })
-
-  // lyrics.ovh 가사 로딩
-  ipcMain.handle("lyrics:getLyrics", async (_, artist: string, title: string) => {
-    const res = await axios.get(
-      `https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`
-    )
-    const lyrics: string = res.data.lyrics
-    if (!lyrics) return []
-
-    return lyrics
-      .split("\n")
-      .map((l) => l.trim())
-      .filter((l) => l.length > 0 && !l.startsWith("["))
   })
 
   createWindow()

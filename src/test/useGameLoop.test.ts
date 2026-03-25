@@ -78,7 +78,7 @@ describe("useGameLoop", () => {
     expect(newY).toBeGreaterThan(initialY)
   })
 
-  it("handleInput: 일치하는 단어 입력 시 score 증가", () => {
+  it("handleKeyDown: Enter 입력 시 일치하는 단어 score 증가", () => {
     const { result } = renderHook(() => useGameLoop())
     act(() => result.current.startGame())
     act(() => tickRaf(100)) // 단어 스폰
@@ -87,14 +87,16 @@ describe("useGameLoop", () => {
     if (!word) return
 
     act(() => {
-      result.current.handleInput({
+      result.current.handleKeyDown({
+        key: "Enter",
+        nativeEvent: { isComposing: false },
         target: { value: word.text }
-      } as React.ChangeEvent<HTMLInputElement>)
+      } as unknown as React.KeyboardEvent<HTMLInputElement>)
     })
     expect(result.current.score).toBe(1)
   })
 
-  it("handleInput: 일치하는 단어 입력 시 단어 제거 (다음 RAF 프레임에서 반영)", () => {
+  it("handleKeyDown: Enter 입력 시 단어 제거 (다음 RAF 프레임에서 반영)", () => {
     const { result } = renderHook(() => useGameLoop())
     act(() => result.current.startGame())
     act(() => tickRaf(100))
@@ -103,16 +105,17 @@ describe("useGameLoop", () => {
     if (!word) return
 
     act(() => {
-      result.current.handleInput({
+      result.current.handleKeyDown({
+        key: "Enter",
+        nativeEvent: { isComposing: false },
         target: { value: word.text }
-      } as React.ChangeEvent<HTMLInputElement>)
+      } as unknown as React.KeyboardEvent<HTMLInputElement>)
     })
-    // words state는 다음 RAF 프레임(setWords 호출)에서 갱신됨
     act(() => tickRaf(116))
     expect(result.current.words.find((w) => w.id === word.id)).toBeUndefined()
   })
 
-  it("handleInput: 대소문자 무관 매칭", () => {
+  it("handleKeyDown: 대소문자 무관 매칭", () => {
     const { result } = renderHook(() => useGameLoop())
     act(() => result.current.startGame())
     act(() => tickRaf(100))
@@ -121,9 +124,11 @@ describe("useGameLoop", () => {
     if (!word) return
 
     act(() => {
-      result.current.handleInput({
+      result.current.handleKeyDown({
+        key: "Enter",
+        nativeEvent: { isComposing: false },
         target: { value: word.text.toUpperCase() }
-      } as React.ChangeEvent<HTMLInputElement>)
+      } as unknown as React.KeyboardEvent<HTMLInputElement>)
     })
     expect(result.current.score).toBe(1)
   })

@@ -2,10 +2,6 @@ import { contextBridge, ipcRenderer } from "electron"
 import { electronAPI } from "@electron-toolkit/preload"
 
 const api = {
-  lyrics: {
-    search: (query: string) => ipcRenderer.invoke("lyrics:search", query),
-    getLyrics: (artist: string, title: string) => ipcRenderer.invoke("lyrics:getLyrics", artist, title)
-  },
   speed: {
     getNews: () => ipcRenderer.invoke("speed:getNews")
   },

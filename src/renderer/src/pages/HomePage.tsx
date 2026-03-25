@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router"
 import HomeHeader from "../components/HomeHeader"
 
 export default function HomePage(): React.JSX.Element {
@@ -13,6 +13,10 @@ export default function HomePage(): React.JSX.Element {
         <button className="hub-btn" onClick={() => navigate("/game")}>
           <span className="hub-btn-title">아티스트 게임</span>
           <span className="hub-btn-desc">쏟아지는 아티스트 이름을 쳐내세요</span>
+        </button>
+        <button className="hub-btn" onClick={() => navigate("/speed")}>
+          <span className="hub-btn-title">스피드 타이핑</span>
+          <span className="hub-btn-desc">속담과 뉴스 헤드라인으로 타자 속도를 올려요</span>
         </button>
         <button
           className="hub-btn"
