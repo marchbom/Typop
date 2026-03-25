@@ -93,7 +93,7 @@ export const fetchTopSpeedScores = async (
   duration?: number,
   limit = 20
 ): Promise<SpeedScoreRow[]> => {
-  let query = supabase.from("speed_scores").select("*").order("score", { ascending: false })
+  let query = supabase.from("speed_scores").select("*").order("tpm", { ascending: false })
 
   if (duration !== undefined) {
     query = query.eq("duration", duration)
