@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router"
 
 interface GameOverScreenProps {
   score: number
@@ -17,9 +17,6 @@ export default function GameOverScreen({
 
   return (
     <div className="page-screen">
-      <button className="game-exit-btn" onClick={() => navigate("/")}>
-        ← 홈으로
-      </button>
       <p className="go-title">GAME OVER</p>
       {user && <p className="game-desc-sub">내 점수가 등록되었어요</p>}
       <div className="go-stats">
@@ -32,9 +29,14 @@ export default function GameOverScreen({
           <span className="go-label">ROUND</span>
         </div>
       </div>
-      <button className="game-btn" onClick={onRestart}>
-        다시 하기
-      </button>
+      <div className="exit-confirm-btns">
+        <button className="game-btn" onClick={onRestart}>
+          다시하기
+        </button>
+        <button className="back-btn" onClick={() => navigate("/")}>
+          홈으로
+        </button>
+      </div>
     </div>
   )
 }

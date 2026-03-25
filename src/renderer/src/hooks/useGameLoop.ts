@@ -19,6 +19,7 @@ export interface GameState {
   inputRef: React.RefObject<HTMLInputElement | null>
   startGame: () => void
   handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void
 }
 
 export interface GameLoopOptions {
@@ -137,6 +138,7 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
       phaseRef.current = "roundbreak"
       setRound(roundRef.current)
       setWords([...wordsRef.current])
+      setInput("")
       setPhase("roundbreak")
       let countdown = 3
       setTimeLeft(countdown)
@@ -147,6 +149,7 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
           clearInterval(tick)
           phaseRef.current = "playing"
           lastTsRef.current = 0
+          setInput("")
           setPhase("playing")
           rafRef.current = requestAnimationFrame(loop)
         }
@@ -207,19 +210,24 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
   }
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const val = e.target.value
-    setInput(val)
+    setInput(e.target.value)
+  }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key !== "Enter") return
+    if (e.nativeEvent.isComposing) return
+
+    const val = (e.target as HTMLInputElement).value
     const matched = wordsRef.current.find((w) => w.text.toLowerCase() === val.toLowerCase())
     if (matched) {
       wordsRef.current = wordsRef.current.filter((w) => w.id !== matched.id)
       scoreRef.current++
       setScore(scoreRef.current)
-      setInput("")
       if (ENGLISH_REGEX.test(matched.text)) {
         triggerSpecialEffect()
       }
     }
+    setInput("")
   }
 
   useEffect(() => {
@@ -247,6 +255,7 @@ export function useGameLoop({ onGameOver }: GameLoopOptions = {}): GameState {
     containerRef,
     inputRef,
     startGame,
-    handleInput
+    handleInput,
+    handleKeyDown
   }
 }

@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router"
 import { useGameLoop } from "../hooks/useGameLoop"
 import { useAuth } from "../context/AuthContext"
 import { insertScore } from "../lib/supabase"
@@ -40,7 +40,8 @@ export default function GamePage(): React.JSX.Element {
     containerRef,
     inputRef,
     startGame,
-    handleInput
+    handleInput,
+    handleKeyDown
   } = useGameLoop({ onGameOver: handleGameOver })
 
   if (phase === "idle") {
@@ -143,7 +144,8 @@ export default function GamePage(): React.JSX.Element {
           className="game-input"
           value={input}
           onChange={handleInput}
-          placeholder="입력하세요"
+          onKeyDown={handleKeyDown}
+          placeholder="입력 후 Enter"
           spellCheck={false}
           autoComplete="off"
           autoCorrect="off"

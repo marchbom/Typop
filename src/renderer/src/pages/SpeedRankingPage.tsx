@@ -63,7 +63,7 @@ export default function SpeedRankingPage(): React.JSX.Element {
         </div>
       )}
 
-      <div className="exit-confirm-btns" style={{ maxWidth: 200 }}>
+      <div className="exit-confirm-btns">
         <button className="back-btn" onClick={() => navigate("/speed")}>
           ← 스피드 타이핑
         </button>
