@@ -3,7 +3,7 @@ import { renderHook, act } from "@testing-library/react"
 import { useGameLoop } from "../renderer/src/hooks/useGameLoop"
 
 // RAF mock
-let rafCallbacks: Map<number, FrameRequestCallback> = new Map()
+const rafCallbacks: Map<number, FrameRequestCallback> = new Map()
 let rafId = 0
 
 beforeEach(() => {
