@@ -16,6 +16,9 @@ declare global {
         search: (query: string) => Promise<SongResult[]>
         getLyrics: (artist: string, title: string) => Promise<string[]>
       }
+      speed: {
+        getNews: () => Promise<string[]>
+      }
       auth: {
         openGoogle: (url: string) => Promise<void>
         onCallback: (callback: (url: string) => void) => void

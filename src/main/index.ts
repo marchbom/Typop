@@ -108,6 +108,31 @@ app.whenReady().then(() => {
       )
   })
 
+  // 네이버 뉴스 헤드라인
+  ipcMain.handle("speed:getNews", async () => {
+    const clientId = import.meta.env.VITE_NAVER_CLIENT_ID as string
+    const clientSecret = import.meta.env.VITE_NAVER_CLIENT_SECRET as string
+    const res = await axios.get("https://openapi.naver.com/v1/search/news.json", {
+      headers: {
+        "X-Naver-Client-Id": clientId,
+        "X-Naver-Client-Secret": clientSecret
+      },
+      params: { query: "오늘", display: 30, sort: "date" }
+    })
+    const clean = (title: string): string =>
+      title
+        .replace(/<[^>]+>/g, "")
+        .replace(/&[a-z]+;/gi, "")
+        .replace(/\[.*?\]/g, "")
+        .replace(/…/g, " ")
+        .replace(/[^\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F\w\s,.!?'"()·]/g, "")
+        .replace(/\s{2,}/g, " ")
+        .trim()
+    return res.data.items
+      .map((item: { title: string }) => clean(item.title))
+      .filter((t: string) => t.length > 5)
+  })
+
   // lyrics.ovh 가사 로딩
   ipcMain.handle("lyrics:getLyrics", async (_, artist: string, title: string) => {
     const res = await axios.get(
