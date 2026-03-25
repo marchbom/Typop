@@ -67,7 +67,9 @@ describe("useSearch", () => {
   it("검색 중 loading 상태 true", async () => {
     let resolveFn!: (v: SongResult[]) => void
     vi.mocked(window.api.lyrics.search).mockReturnValue(
-      new Promise((r) => { resolveFn = r })
+      new Promise((r) => {
+        resolveFn = r
+      })
     )
     const { result } = renderHook(() => useSearch())
     act(() => result.current.setQuery("IU"))
@@ -79,7 +81,9 @@ describe("useSearch", () => {
     expect(result.current.loading).toBe(true)
 
     // 검색 완료
-    await act(async () => { resolveFn(mockSongs) })
+    await act(async () => {
+      resolveFn(mockSongs)
+    })
     expect(result.current.loading).toBe(false)
   })
 })
