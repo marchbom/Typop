@@ -1,8 +1,29 @@
-import { app, shell, BrowserWindow, ipcMain } from "electron"
+import { app, shell, BrowserWindow, ipcMain, dialog } from "electron"
 import { join, resolve } from "path"
 import { electronApp, optimizer, is } from "@electron-toolkit/utils"
 import icon from "../../resources/icon.png?asset"
 import axios from "axios"
+import { autoUpdater } from "electron-updater"
+
+function setupAutoUpdater(): void {
+  autoUpdater.autoDownload = true
+  autoUpdater.autoInstallOnAppQuit = false
+
+  autoUpdater.on("update-downloaded", () => {
+    dialog
+      .showMessageBox({
+        type: "info",
+        title: "업데이트 완료",
+        message: "새 버전이 다운로드됐습니다. 지금 재시작할까요?",
+        buttons: ["재시작", "나중에"]
+      })
+      .then(({ response }) => {
+        if (response === 0) autoUpdater.quitAndInstall()
+      })
+  })
+
+  autoUpdater.checkForUpdates().catch(() => {})
+}
 
 const PROTOCOL = "typop"
 
@@ -109,6 +130,8 @@ app.whenReady().then(() => {
   })
 
   createWindow()
+
+  if (!is.dev) setupAutoUpdater()
 
   app.on("activate", function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

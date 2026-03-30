@@ -40,13 +40,19 @@
     "dmg": {
       "sign": false
     },
-    "afterSign": "scripts/notarize.mjs"
+    "afterSign": "scripts/notarize.mjs",
+    "publish": {
+      "provider": "github",
+      "owner": "marchbom",
+      "repo": "Typop"
+    }
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@supabase/supabase-js": "^2.99.2",
     "axios": "^1.13.6",
+    "electron-updater": "^6.8.3",
     "react-router": "^7.13.2"
   },
   "devDependencies": {
